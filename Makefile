@@ -36,9 +36,6 @@ build:
 render-start:
 	uv run gunicorn w_parser.wsgi
 
-dev-setup-once:
-	make create-db
-	make migrate
 #_______________________________________________________________________________Test
 test:
 	uv run pytest
