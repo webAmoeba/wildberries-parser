@@ -32,14 +32,14 @@ build:
 	./build.sh
 
 render-start:
-	uv run gunicorn task_manager.wsgi
+	uv run gunicorn w_parser.wsgi
 
 #_______________________________________________________________________________Test
 test:
 	uv run pytest
 
 test-cov:
-	uv run pytest --cov=task_manager
+	uv run pytest --cov=w_parser
 
 cover-html:
-	uv run pytest --cov=task_manager --cov-report html
+	uv run pytest --cov=w_parser --cov-report html
