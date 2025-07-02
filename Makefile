@@ -16,6 +16,8 @@ fix:
 	uv run ruff check --fix
 
 #_______________________________________________________________________________
+create-db:
+	uv run python create_db.py
 
 collectstatic:
 	uv run python manage.py collectstatic --noinput
@@ -29,11 +31,14 @@ dev-migrate:
 	uv run manage.py migrate
 
 build:
-	./build.sh
+	./build-prod.sh
 
 render-start:
 	uv run gunicorn w_parser.wsgi
 
+dev-setup-once:
+	make create-db
+	make migrate
 #_______________________________________________________________________________Test
 test:
 	uv run pytest
