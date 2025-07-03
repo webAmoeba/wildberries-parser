@@ -1,5 +1,9 @@
+prod-install:
+	uv sync
+
 install:
 	uv sync
+	npm i
 
 dev:
 	uv run python manage.py runserver
@@ -31,7 +35,7 @@ dev-migrate:
 	uv run manage.py migrate
 
 build:
-	./build-prod.sh
+	./build.sh
 
 render-start:
 	uv run gunicorn w_parser.wsgi
