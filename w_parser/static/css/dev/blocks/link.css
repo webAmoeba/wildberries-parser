@@ -1,0 +1,14 @@
+.link {
+    color: var(--purple);
+    transition: color 0.3s ease;
+
+    &.link--center {
+        margin: 0 auto;
+        display: block;
+        width: max-content;
+    }
+
+    &:hover {
+        color: var(--violet);
+    }
+}

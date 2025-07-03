@@ -1,26 +1,26 @@
 .container {
     width: 100%;
-    /* max-width: 1000px; */
-    max-width: 62.5rem;
+    max-width: 90rem;/* 1440px; */
     margin: 0 auto;
-    padding: 0 1.25rem;
+    padding: 0 1.5rem;
 
-    @media (max-width: 1920px) {
-        /* padding: 0 1.25rem; */
+    /* 120rem 1920px */
+    @media (max-width: 120rem) {
+        padding: 0 1.5rem;
     }
 
-    /* 89.9375rem */
-    @media (max-width: 1439px) {
-        /* padding: 0 1.25rem; */
+    /* 89.9375rem 1439px */
+    @media (max-width: 89.9375rem) {
+        padding: 0 1.5rem;
     }
 
-    /* 63.9375rem */
-    @media (max-width: 1023px) {
-        /* padding: 0 24px; */
+    /* 63.9375rem 1023px */
+    @media (max-width: 63.9375rem) {
+        padding: 0 1.25rem;
     }
 
-    /* 47.9375rem */
-    @media (max-width: 767px) {
+    /* 47.9375rem 767px */
+    @media (max-width: 47.9375rem) {
         padding: 0 1rem;
     }
 }
