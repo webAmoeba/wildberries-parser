@@ -17,6 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from w_parser import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("", views.index, name="index"),
 ]
+
+handler404 = "w_parser.views.custom_404"
