@@ -1,0 +1,11 @@
+@import "global/normalize.css";
+@import "global/variables.css";
+
+@import "global/fonts.css";
+@import "global/reboot.css";
+@import "global/utils.css";
+@import "global/reset.css";
+@import "global/common.css";
+@import "global/container.css";
+
+/* blocks */
