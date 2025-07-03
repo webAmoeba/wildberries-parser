@@ -47,5 +47,5 @@ cover-html:
 	uv run pytest --cov=w_parser --cov-report html
 
 #_______________________________________________________________________________CSS
-build-css:
-	npx postcss styles/index.css --no-map --output css/index.css
+css-build:
+	npx postcss w_parser/static/css/dev/main.css --no-map -o w_parser/static/css/main.css

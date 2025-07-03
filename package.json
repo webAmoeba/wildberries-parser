@@ -1,0 +1,27 @@
+{
+  "name": "wildberries-parser",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "npx postcss w_parser/static/css/dev/main.css --no-map -o w_parser/static/css/main.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webAmoeba/wildberries-parser.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/webAmoeba/wildberries-parser/issues"
+  },
+  "homepage": "https://github.com/webAmoeba/wildberries-parser#readme",
+  "description": "",
+  "devDependencies": {
+    "postcss": "^8.5.6",
+    "postcss-cli": "^11.0.1",
+    "postcss-discard-comments": "^7.0.4",
+    "postcss-import": "^16.1.1",
+    "postcss-url": "^10.1.3"
+  }
+}
