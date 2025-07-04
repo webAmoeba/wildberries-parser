@@ -91,20 +91,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Пример товара 1</td>
-                            <td>5 000 ₽</td>
-                            <td>4 000 ₽</td>
-                            <td>4.5</td>
-                            <td>120</td>
-                        </tr>
-                        <tr>
-                            <td>Пример товара 2</td>
-                            <td>3 200 ₽</td>
-                            <td>2 900 ₽</td>
-                            <td>4.0</td>
-                            <td>75</td>
-                        </tr>
+                        {% for p in products %}
+                            <tr>
+                                <td>{{ p.name }}</td>
+                                <td>{{ p.price }} ₽</td>
+                                <td>{{ p.discount_price }} ₽</td>
+                                <td>{{ p.rating }}</td>
+                                <td>{{ p.reviews }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5">Нет товаров для отображения</td>
+                            </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>

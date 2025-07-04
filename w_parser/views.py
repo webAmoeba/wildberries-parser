@@ -10,7 +10,23 @@ def custom_404(request, exception):
 
 
 def index(request):
-    return render(
-        request,
-        "index.html",
-    )
+    query = request.GET.get("query", "")
+
+    products = [
+        {
+            "name": "Пример товара 1",
+            "price": 5000,
+            "discount_price": 4000,
+            "rating": 4.5,
+            "reviews": 120,
+        },
+        {
+            "name": "Пример товара 2",
+            "price": 3200,
+            "discount_price": 2900,
+            "rating": 4.0,
+            "reviews": 75,
+        },
+    ]
+
+    return render(request, "index.html", {"query": query, "products": products})
