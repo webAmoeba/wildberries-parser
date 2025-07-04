@@ -387,14 +387,136 @@ ul, ol{
 }
 
 .section{
-    padding:1rem 0;
+    padding:1rem 0 0;
+
+    &.section--full-padding{
+        padding-bottom:1rem 0;
+    }
 }
 
 .link{
     color:var(--purple);
     transition:color 0.3s ease;
 
+    &.link--center{
+        margin:0 auto;
+        display:block;
+        width:max-content;
+    }
+
     &:hover{
         color:var(--violet);
+    }
+}
+
+.form{
+    display:flex;
+    gap:1rem;
+
+    label{
+        display:flex;
+        flex-grow:1;
+
+        input{
+            border-radius:1.5rem;
+            border:0.0625rem solid #e2e2e8;
+            width:100%;
+            padding:0.625rem;
+            font-size:1rem;
+            font-style:normal;
+        }
+    }
+}
+
+.button{
+    border-radius:1.5rem;
+    border:0.0625rem solid #e2e2e8;
+    padding:0.625rem;
+    font-size:1rem;
+    font-style:normal;
+    background-color:var(--purple);
+    color:var(--white);
+    cursor:pointer;
+
+    transition:background-color 0.3s ease;
+
+    &:hover{
+        background-color:var(--violet);
+    }
+}
+
+.filter{
+    display:flex;
+    flex-direction:column;
+    gap:0.5rem;
+
+    label{
+        display:flex;
+        flex-direction:column;
+        gap:0.5rem;
+        min-width:10rem;
+        width:max-content;
+
+        input,
+        select{
+            border-radius:0.4rem;
+            border:0.0625rem solid #0e0ed45f;
+            width:100%;
+            padding:0.3rem;
+            font-size:1rem;
+            font-style:normal;
+        }
+    }
+}
+
+.filter__filters{
+    display:flex;
+    flex-wrap:wrap;
+    gap:1rem;
+
+}
+
+.filter__type{
+    display:flex;
+    flex-direction:column;
+    gap:0.5rem;
+}
+
+.filter__minmax-price{
+    display:flex;
+    gap:1rem;
+}
+
+.sorting{
+    select{
+        border-radius:0.4rem;
+        border:0.0625rem solid #0e0ed45f;
+        padding:0.3rem;
+        font-size:1rem;
+        font-style:normal;
+    }
+}
+
+.output{
+    .container{
+        display:flex;
+        flex-direction:column;
+        gap:1rem;
+    }
+
+    .button{
+        align-self:start;
+    }
+}
+
+.output__table{
+    overflow-x:auto;
+
+    table{
+        width:100%;
+
+        th{
+            text-align:left;
+        }
     }
 }

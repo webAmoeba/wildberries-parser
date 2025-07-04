@@ -76,37 +76,48 @@
         </div>
     </section>
 
-    <section class="section">
+    <section class="section output">
         <h2 class="visually-hidden">Вывод запроса</h2>
-        <div class="container">
-            <div class="table">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Название товара</th>
-                            <th>Цена</th>
-                            <th>Цена со скидкой</th>
-                            <th>Рейтинг</th>
-                            <th>Количество отзывов</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for p in products %}
+
+        {% if products %}
+            <div class="container">
+                <div class="output__table">
+                    <table>
+                        <thead>
                             <tr>
-                                <td>{{ p.name }}</td>
-                                <td>{{ p.price }} ₽</td>
-                                <td>{{ p.discount_price }} ₽</td>
-                                <td>{{ p.rating }}</td>
-                                <td>{{ p.reviews }}</td>
+                                <th>Название товара</th>
+                                <th>Цена</th>
+                                <th>Цена со скидкой</th>
+                                <th>Рейтинг</th>
+                                <th>Количество отзывов</th>
                             </tr>
-                        {% empty %}
-                            <tr>
-                                <td colspan="5">Нет товаров для отображения</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {% for p in products %}
+                                <tr>
+                                    <td>{{ p.name }}</td>
+                                    <td>{{ p.price }} ₽</td>
+                                    <td>{{ p.discount_price }} ₽</td>
+                                    <td>{{ p.rating }}</td>
+                                    <td>{{ p.reviews }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <button type="button" class="button" id="save-results">Сохранить результаты</button>
             </div>
-        </div>
+
+        {% else %}
+
+            {% if query %}
+                <div class="container">
+                    <p>
+                        По запросу <b>{{ query }}</b> ничего не найдено.
+                    </p>
+                </div>
+            {% endif %}
+        {% endif %}
     </section>
 {% endblock %}

@@ -2,6 +2,6 @@
     padding: 1rem 0 0;
 
     &.section--full-padding {
-        padding-bottom: 1rem 0;
+        padding-bottom: 1rem;
     }
 }

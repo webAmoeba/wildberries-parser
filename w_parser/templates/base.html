@@ -11,15 +11,19 @@
     </head>
     <body>
         <div class="wrapper">
-            {% comment %} <header></header> {% endcomment %}
+            <header class="section section--full-padding">
+                <div class="container">
+                    <a class="link" href="{% url 'index' %}">Главная</a>
+                </div>
+            </header>
             <main>
                 {% block content %}{% endblock %}
             </main>
-            <footer>
-                <div class="section">
-                    <div class="container">
-                        <a class="link link--center" href="https://t.me/webAmoeba" target="_blank">webAmoeba</a>
-                    </div>
+            <footer class="section section--full-padding">
+                <div class="container">
+                    <a class="link link--center"
+                       href="https://t.me/webAmoeba"
+                       target="_blank">webAmoeba</a>
                 </div>
             </footer>
         </div>

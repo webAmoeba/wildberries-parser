@@ -5,15 +5,13 @@
 @import "global/reboot.css";
 @import "global/utils.css";
 @import "global/reset.css";
-@import "global/common.css";
 @import "global/container.css";
 
 /* blocks */
 @import "blocks/section.css";
 @import "blocks/link.css";
 @import "blocks/form.css";
-@import "blocks/input.css";
 @import "blocks/button.css";
-@import "blocks/table.css";
 @import "blocks/filter.css";
 @import "blocks/sorting.css";
+@import "blocks/output.css";
