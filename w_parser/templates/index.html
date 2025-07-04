@@ -1,7 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<section class="main-section">
-    main section
-</section>
+    <section class="section">
+        <div class="container">
+            <form class="form" method="get" action="#">
+                <label>
+                    <input type="text" name="query" placeholder="Введите категорию или запрос" />
+                </label>
+                <button type="submit" class="button">Показать товары</button>
+            </form>
+        </div>
+    </section>
 {% endblock %}

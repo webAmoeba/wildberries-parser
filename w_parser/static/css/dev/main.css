@@ -11,3 +11,6 @@
 /* blocks */
 @import "blocks/section.css";
 @import "blocks/link.css";
+@import "blocks/form.css";
+@import "blocks/input.css";
+@import "blocks/button.css";
