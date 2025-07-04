@@ -15,3 +15,5 @@
 @import "blocks/input.css";
 @import "blocks/button.css";
 @import "blocks/table.css";
+@import "blocks/filter.css";
+@import "blocks/sorting.css";

@@ -1,0 +1,9 @@
+.sorting {
+    select {
+        border-radius: 0.4rem;
+        border: 0.0625rem solid #0e0ed45f;
+        padding: 0.3rem;
+        font-size: 1rem;
+        font-style: normal;
+    }
+}
