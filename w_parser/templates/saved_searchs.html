@@ -17,7 +17,7 @@
                         <tbody>
                             {% for s in searchs %}
                                 <tr data-search-id="{{ s.id }}">
-                                    <td>{{ s.name }}</td>
+                                    <td><a class="link" href="{% url 'search_products' s.id %}">{{ s.name }}</a></td>
                                     <td>{{ s.created_at|date:"d.m.Y H:i" }}</td>
                                 </tr>
                             {% endfor %}

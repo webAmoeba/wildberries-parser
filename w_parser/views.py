@@ -1,7 +1,7 @@
 import json
 
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 
 from w_parser.models import Product, Search, SearchProduct
@@ -44,7 +44,7 @@ def save_products(request):
                     status=400,
                 )
 
-            search, _ = Search.objects.get_or_create(name=query)
+            search = Search.objects.create(name=query)
 
             for item in products:
                 if not item.get("wb_id") or not isinstance(
@@ -53,7 +53,8 @@ def save_products(request):
                     return JsonResponse(
                         {
                             "success": False,
-                            "error": f"Invalid or missing wb_id for item {item.get('name', 'Unknown')}",
+                            "error": f"Invalid or missing wb_id for item \
+                                {item.get('name', 'Unknown')}",
                         },
                         status=400,
                     )
@@ -82,3 +83,11 @@ def save_products(request):
 def saved_searchs(request):
     searchs = Search.objects.all()
     return render(request, "saved_searchs.html", {"searchs": searchs})
+
+
+def search_products(request, search_id):
+    search = get_object_or_404(Search, id=search_id)
+    products = Product.objects.filter(searches=search)
+    return render(
+        request, "index.html", {"query": search.name, "products": products}
+    )

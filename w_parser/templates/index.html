@@ -4,9 +4,12 @@
     <section class="section">
         <h2 class="visually-hidden">Ввод запроса</h2>
         <div class="container">
-            <form class="form" method="get" action="#">
+            <form class="form" method="get" action="{% url 'index' %}">
                 <label>
-                    <input type="text" name="query" placeholder="Введите категорию или запрос">
+                    <input type="text"
+                           name="query"
+                           placeholder="Введите категорию или запрос"
+                           value="{{ query|escape }}">
                 </label>
                 <button type="submit" class="button">Показать товары</button>
             </form>
@@ -42,7 +45,7 @@
                                    min="0"
                                    max="5"
                                    placeholder="например, 4, 4.1"
-                                   oninput="const max = parseFloat(this.max); if (this.valueAsNumber > max) { this.value = max; } ">
+                                   oninput="const max = parseFloat(this.max); if (this.valueAsNumber > max) { this.value = max; }">
                         </label>
                     </div>
 
