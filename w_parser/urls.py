@@ -23,6 +23,7 @@ from w_parser import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.index, name="index"),
+    path("save-products/", views.save_products, name="save_products"),
 ]
 
 handler404 = "w_parser.views.custom_404"
