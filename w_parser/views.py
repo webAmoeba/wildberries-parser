@@ -32,12 +32,24 @@ def save_products(request):
         try:
             data = json.loads(request.body)
             for item in data:
-                # избежать дублей по названию
+                if not item.get("wb_id") or not isinstance(
+                    item.get("wb_id"), int
+                ):
+                    return JsonResponse(
+                        {
+                            "success": False,
+                            "error": f"Invalid or missing wb_id for item \
+                                {item.get('name', 'Unknown')}",
+                        },
+                        status=400,
+                    )
+
                 Product.objects.get_or_create(
-                    name=item["name"],
+                    wb_id=item["wb_id"],
                     defaults={
+                        "name": item["name"],
                         "price": item["price"],
-                        "discount_price": item["discount_price"],
+                        "discount_price": item.get("discount_price"),
                         "rating": item.get("rating"),
                         "reviews": item.get("reviews", 0),
                     },

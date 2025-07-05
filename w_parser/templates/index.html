@@ -94,7 +94,7 @@
                         </thead>
                         <tbody>
                             {% for p in products %}
-                                <tr>
+                                <tr data-wb-id="{{ p.wb_id }}">
                                     <td>{{ p.name }}</td>
                                     <td>{{ p.price }} ₽</td>
                                     <td>{{ p.discount_price }} ₽</td>

@@ -36,6 +36,7 @@ def fetch_wb_products(query: str, limit: int = 10) -> list[dict]:
     for item in raw_products:
         products.append(
             {
+                "wb_id": item.get("id"),
                 "name": item.get("name", ""),
                 "price": item.get("sizes", [{}])[0]
                 .get("price", {})
