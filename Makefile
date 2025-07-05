@@ -31,7 +31,7 @@ migrate:
 	uv run python manage.py shell < create_superuser.py
 
 dev-migrate:
-	uv run manage.py makemigrations
+	uv run manage.py makemigrations w_parser
 	uv run manage.py migrate
 
 build:
