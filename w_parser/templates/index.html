@@ -4,7 +4,9 @@
     <section class="section">
         <h2 class="visually-hidden">Ввод запроса</h2>
         <div class="container">
-            <form class="form" method="get" action="{% url 'index' %}">
+            <form class="form"
+                  method="get"
+                  action="{% if search_id %}{% url 'search_products' search_id %}{% else %}{% url 'index' %}{% endif %}">
                 <label>
                     <input type="text"
                            name="query"
@@ -21,16 +23,25 @@
             <div class="filter">
                 <h2>Фильтры</h2>
 
-                <div class="filter__filters">
+                <form class="filter__filters" method="get"
+                      action="{% if search_id %}{% url 'search_products' search_id %}{% else %}{% url 'index' %}{% endif %}">
                     {% comment %} Фильтр по цене (диапазон) {% endcomment %}
                     <div class="filter__type">
                         <b>Диапазон цен:</b>
                         <div class="filter__minmax-price">
                             <label>
-                                <input type="number" name="min_price" placeholder="Мин. цена" min="0">
+                                <input type="number"
+                                       name="min_price"
+                                       placeholder="Мин. цена"
+                                       min="0"
+                                       value="{{ min_price|default_if_none:'' }}">
                             </label>
                             <label>
-                                <input type="number" name="max_price" placeholder="Макс. цена" min="0">
+                                <input type="number"
+                                       name="max_price"
+                                       placeholder="Макс. цена"
+                                       min="0"
+                                       value="{{ max_price|default_if_none:'' }}">
                             </label>
                         </div>
                     </div>
@@ -74,7 +85,12 @@
                             </select>
                         </label>
                     </div>
-                </div>
+
+                    <div class="filter__buttons">
+                        <button class="button" type="submit">Отфильтровать</button>
+                        <a href="{% if search_id %}{% url 'search_products' search_id %}{% else %}{% url 'index' %}?query={{ query|urlencode }}{% endif %}" class="button">Сбросить</a>
+                    </div>
+                </form>
             </div>
         </div>
     </section>

@@ -18,12 +18,44 @@ def custom_404(request, exception):
 
 def index(request):
     query = request.GET.get("query", "").strip()
+    min_price = request.GET.get("min_price")
+    max_price = request.GET.get("max_price")
     products = []
 
     if query:
         products = fetch_wb_products(query, limit=10)
+        # фильтр по цене
+        if min_price:
+            try:
+                min_price = int(min_price)
+                products = [
+                    p for p in products if p["discount_price"] >= min_price
+                ]
+            except (ValueError, TypeError):
+                pass  # игнор невалида
+        if max_price:
+            try:
+                max_price = int(max_price)
+                products = [
+                    p for p in products if p["discount_price"] <= max_price
+                ]
+            except (ValueError, TypeError):
+                pass  # игнор невалида
 
-    return render(request, "index.html", {"query": query, "products": products})
+    print(
+        f"Index: query={query}, min_price={min_price}, max_price={max_price}, products={len(products)}"
+    )
+
+    return render(
+        request,
+        "index.html",
+        {
+            "query": query,
+            "products": products,
+            "min_price": min_price,
+            "max_price": max_price,
+        },
+    )
 
 
 @csrf_exempt
@@ -53,8 +85,7 @@ def save_products(request):
                     return JsonResponse(
                         {
                             "success": False,
-                            "error": f"Invalid or missing wb_id for item \
-                                {item.get('name', 'Unknown')}",
+                            "error": f"Invalid or missing wb_id for item {item.get('name', 'Unknown')}",
                         },
                         status=400,
                     )
@@ -74,6 +105,9 @@ def save_products(request):
                     search=search, product=product
                 )
 
+            print(
+                f"Saved search: id={search.id}, name={query}, products={len(products)}"
+            )
             return JsonResponse({"success": True})
         except Exception as e:
             return JsonResponse({"success": False, "error": str(e)}, status=400)
@@ -87,7 +121,36 @@ def saved_searchs(request):
 
 def search_products(request, search_id):
     search = get_object_or_404(Search, id=search_id)
+    min_price = request.GET.get("min_price")
+    max_price = request.GET.get("max_price")
     products = Product.objects.filter(searches=search)
+
+    # фильтр по цене
+    if min_price:
+        try:
+            min_price = int(min_price)
+            products = products.filter(discount_price__gte=min_price)
+        except (ValueError, TypeError):
+            pass  # игнор невалида
+    if max_price:
+        try:
+            max_price = int(max_price)
+            products = products.filter(discount_price__lte=max_price)
+        except (ValueError, TypeError):
+            pass  # игнор невалида
+
+    print(
+        f"Search_products: search_id={search_id}, query={search.name}, min_price={min_price}, max_price={max_price}, products={products.count()}"
+    )
+
     return render(
-        request, "index.html", {"query": search.name, "products": products}
+        request,
+        "index.html",
+        {
+            "query": search.name,
+            "products": products,
+            "search_id": search_id,
+            "min_price": min_price,
+            "max_price": max_price,
+        },
     )
