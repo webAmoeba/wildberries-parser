@@ -20,6 +20,9 @@ def index(request):
     query = request.GET.get("query", "").strip()
     min_price = request.GET.get("min_price")
     max_price = request.GET.get("max_price")
+    min_rating = request.GET.get("min_rating")
+    min_reviews = request.GET.get("min_reviews")
+
     products = []
 
     if query:
@@ -41,13 +44,22 @@ def index(request):
                 ]
             except (ValueError, TypeError):
                 pass  # игнор невалида
-    else:
-        print("Index: No query provided, skipping fetch_wb_products")
 
-    print(
-        f"Index: query={query}, min_price={min_price}, max_price={max_price}, \
-            products={len(products)}"
-    )
+        # фильтр по рейтингу
+        if min_rating:
+            try:
+                mr = float(min_rating)
+                products = [p for p in products if (p.get("rating") or 0) >= mr]
+            except (ValueError, TypeError):
+                pass  # игнор невалида
+
+        # фильтр по количеству отзывов
+        if min_reviews:
+            try:
+                mrw = int(min_reviews)
+                products = [p for p in products if p.get("reviews", 0) >= mrw]
+            except (ValueError, TypeError):
+                pass
 
     return render(
         request,
@@ -57,6 +69,8 @@ def index(request):
             "products": products,
             "min_price": min_price,
             "max_price": max_price,
+            "min_rating": min_rating,
+            "min_reviews": min_reviews,
         },
     )
 
@@ -128,6 +142,9 @@ def search_products(request, search_id):
     search = get_object_or_404(Search, id=search_id)
     min_price = request.GET.get("min_price")
     max_price = request.GET.get("max_price")
+    min_rating = request.GET.get("min_rating")
+    min_reviews = request.GET.get("min_reviews")
+
     products = Product.objects.filter(searches=search)
 
     # фильтр по цене
@@ -144,11 +161,12 @@ def search_products(request, search_id):
         except (ValueError, TypeError):
             pass  # игнор невалида
 
-    print(
-        f"Search_products: search_id={search_id}, query={search.name}, \
-            min_price={min_price}, max_price={max_price}, \
-                products={products.count()}"
-    )
+    # фильтр по количеству отзывов
+    if min_reviews:
+        try:
+            products = products.filter(reviews__gte=int(min_reviews))
+        except (ValueError, TypeError):
+            pass  # игнор невалида
 
     return render(
         request,
@@ -159,5 +177,7 @@ def search_products(request, search_id):
             "search_id": search_id,
             "min_price": min_price,
             "max_price": max_price,
+            "min_rating": min_rating,
+            "min_reviews": min_reviews,
         },
     )

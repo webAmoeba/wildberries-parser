@@ -54,9 +54,10 @@
                             <input type="number"
                                    name="min_rating"
                                    step="0.1"
-                                   min="0"
+                                   min="1"
                                    max="5"
                                    placeholder="например, 4, 4.1"
+                                   value="{{ min_rating|default_if_none:'' }}"
                                    oninput="const max = parseFloat(this.max); if (this.valueAsNumber > max) { this.value = max; }">
                         </label>
                     </div>
@@ -65,7 +66,12 @@
                     <div class="filter__type">
                         <label>
                             <b>Минимум отзывов:</b>
-                            <input type="number" name="min_reviews" min="0" placeholder="например, 100">
+                            <input type="number"
+                                   name="min_reviews"
+                                   min="0"
+                                   placeholder="например, 100"
+                                   value="{{ min_reviews|default_if_none:'' }}">
+
                         </label>
                     </div>
 
