@@ -41,9 +41,12 @@ def index(request):
                 ]
             except (ValueError, TypeError):
                 pass  # игнор невалида
+    else:
+        print("Index: No query provided, skipping fetch_wb_products")
 
     print(
-        f"Index: query={query}, min_price={min_price}, max_price={max_price}, products={len(products)}"
+        f"Index: query={query}, min_price={min_price}, max_price={max_price}, \
+            products={len(products)}"
     )
 
     return render(
@@ -85,7 +88,8 @@ def save_products(request):
                     return JsonResponse(
                         {
                             "success": False,
-                            "error": f"Invalid or missing wb_id for item {item.get('name', 'Unknown')}",
+                            "error": f"Invalid or missing wb_id for item \
+                                {item.get('name', 'Unknown')}",
                         },
                         status=400,
                     )
@@ -106,7 +110,8 @@ def save_products(request):
                 )
 
             print(
-                f"Saved search: id={search.id}, name={query}, products={len(products)}"
+                f"Saved search: id={search.id}, name={query}, \
+                    products={len(products)}"
             )
             return JsonResponse({"success": True})
         except Exception as e:
@@ -140,7 +145,9 @@ def search_products(request, search_id):
             pass  # игнор невалида
 
     print(
-        f"Search_products: search_id={search_id}, query={search.name}, min_price={min_price}, max_price={max_price}, products={products.count()}"
+        f"Search_products: search_id={search_id}, query={search.name}, \
+            min_price={min_price}, max_price={max_price}, \
+                products={products.count()}"
     )
 
     return render(

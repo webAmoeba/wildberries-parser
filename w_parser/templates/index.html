@@ -22,9 +22,10 @@
         <div class="container">
             <div class="filter">
                 <h2>Фильтры</h2>
-
-                <form class="filter__filters" method="get"
+                <form class="filter__filters"
+                      method="get"
                       action="{% if search_id %}{% url 'search_products' search_id %}{% else %}{% url 'index' %}{% endif %}">
+                    <input type="hidden" name="query" value="{{ query|escape }}">
                     {% comment %} Фильтр по цене (диапазон) {% endcomment %}
                     <div class="filter__type">
                         <b>Диапазон цен:</b>
@@ -88,7 +89,8 @@
 
                     <div class="filter__buttons">
                         <button class="button" type="submit">Отфильтровать</button>
-                        <a href="{% if search_id %}{% url 'search_products' search_id %}{% else %}{% url 'index' %}?query={{ query|urlencode }}{% endif %}" class="button">Сбросить</a>
+                        <a href="{% if search_id %}{% url 'search_products' search_id %}{% else %}{% url 'index' %}?query={{ query|urlencode }}{% endif %}"
+                           class="button">Сбросить</a>
                     </div>
                 </form>
             </div>
