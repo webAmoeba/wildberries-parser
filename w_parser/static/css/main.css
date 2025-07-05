@@ -419,7 +419,7 @@ ul, ol{
 
         input{
             border-radius:1.5rem;
-            border:0.0625rem solid #e2e2e8;
+            border:0.0625rem solid var(--gray);
             width:100%;
             padding:0.625rem;
             font-size:1rem;
@@ -430,7 +430,7 @@ ul, ol{
 
 .button{
     border-radius:1.5rem;
-    border:0.0625rem solid #e2e2e8;
+    border:0.0625rem solid var(--gray);
     padding:0.625rem;
     font-size:1rem;
     font-style:normal;
@@ -460,7 +460,7 @@ ul, ol{
         input,
         select{
             border-radius:0.4rem;
-            border:0.0625rem solid #0e0ed45f;
+            border:0.0625rem solid var(--blueshift);
             width:100%;
             padding:0.3rem;
             font-size:1rem;
@@ -490,7 +490,7 @@ ul, ol{
 .sorting{
     select{
         border-radius:0.4rem;
-        border:0.0625rem solid #0e0ed45f;
+        border:0.0625rem solid var(--blueshift);
         padding:0.3rem;
         font-size:1rem;
         font-style:normal;

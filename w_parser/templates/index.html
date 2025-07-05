@@ -119,7 +119,7 @@
                                     <td>{{ p.name }}</td>
                                     <td>{{ p.price }} ₽</td>
                                     <td>{{ p.discount_price }} ₽</td>
-                                    <td>{{ p.rating }}</td>
+                                    <td>{{ p.rating|default_if_none:"" }}</td>
                                     <td>{{ p.reviews }}</td>
                                 </tr>
                             {% endfor %}

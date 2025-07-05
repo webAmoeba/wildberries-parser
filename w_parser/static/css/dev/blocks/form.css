@@ -8,7 +8,7 @@
 
         input {
             border-radius: 1.5rem;
-            border: 0.0625rem solid #e2e2e8;
+            border: 0.0625rem solid var(--gray);
             width: 100%;
             padding: 0.625rem;
             font-size: 1rem;
