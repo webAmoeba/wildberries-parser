@@ -11,9 +11,17 @@
     </head>
     <body>
         <div class="wrapper">
-            <header class="section section--full-padding">
+            <header class="header section section--full-padding">
                 <div class="container">
                     <a class="link" href="{% url 'index' %}">Главная</a>
+
+                    <nav>
+                        <ul>
+                            <li>
+                                <a class="link" href="{% url 'saved_searchs' %}">Сохраненные поиски</a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </header>
             <main>

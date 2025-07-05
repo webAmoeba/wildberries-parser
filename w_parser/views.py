@@ -77,3 +77,8 @@ def save_products(request):
         except Exception as e:
             return JsonResponse({"success": False, "error": str(e)}, status=400)
     return JsonResponse({"detail": "Method not allowed"}, status=405)
+
+
+def saved_searchs(request):
+    searchs = Search.objects.all()
+    return render(request, "saved_searchs.html", {"searchs": searchs})

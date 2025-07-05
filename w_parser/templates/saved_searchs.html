@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <section class="section output">
+        <h2 class="visually-hidden">Сохраненные поиски</h2>
+
+        {% if searchs %}
+            <div class="container">
+                <div class="output__table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Название поиска</th>
+                                <th>Дата</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for s in searchs %}
+                                <tr data-search-id="{{ s.id }}">
+                                    <td>{{ s.name }}</td>
+                                    <td>{{ s.created_at|date:"d.m.Y H:i" }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        {% else %}
+
+            <div class="container">
+                <p>Сохраненных поисков нет.</p>
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}

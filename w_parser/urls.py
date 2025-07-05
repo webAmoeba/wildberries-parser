@@ -24,6 +24,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.index, name="index"),
     path("save-products/", views.save_products, name="save_products"),
+    path("saved-searchs/", views.saved_searchs, name="saved_searchs"),
 ]
 
 handler404 = "w_parser.views.custom_404"

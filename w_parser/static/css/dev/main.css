@@ -8,6 +8,7 @@
 @import "global/container.css";
 
 /* blocks */
+@import "blocks/header.css";
 @import "blocks/section.css";
 @import "blocks/link.css";
 @import "blocks/form.css";
