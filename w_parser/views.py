@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
-from w_parser.models import Product
+from w_parser.models import Product, Search, SearchProduct
 from w_parser.utils import fetch_wb_products
 
 
@@ -31,29 +31,48 @@ def save_products(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
-            for item in data:
+            query = data.get("query", "").strip()
+            products = data.get("products", [])
+
+            if not query:
+                return JsonResponse(
+                    {"success": False, "error": "Query is required"}, status=400
+                )
+            if not products:
+                return JsonResponse(
+                    {"success": False, "error": "No products provided"},
+                    status=400,
+                )
+
+            search, _ = Search.objects.get_or_create(name=query)
+
+            for item in products:
                 if not item.get("wb_id") or not isinstance(
                     item.get("wb_id"), int
                 ):
                     return JsonResponse(
                         {
                             "success": False,
-                            "error": f"Invalid or missing wb_id for item \
-                                {item.get('name', 'Unknown')}",
+                            "error": f"Invalid or missing wb_id for item {item.get('name', 'Unknown')}",
                         },
                         status=400,
                     )
 
-                Product.objects.get_or_create(
+                product, _ = Product.objects.get_or_create(
                     wb_id=item["wb_id"],
                     defaults={
                         "name": item["name"],
                         "price": item["price"],
-                        "discount_price": item.get("discount_price"),
+                        "discount_price": item["discount_price"],
                         "rating": item.get("rating"),
                         "reviews": item.get("reviews", 0),
                     },
                 )
+
+                SearchProduct.objects.get_or_create(
+                    search=search, product=product
+                )
+
             return JsonResponse({"success": True})
         except Exception as e:
             return JsonResponse({"success": False, "error": str(e)}, status=400)
