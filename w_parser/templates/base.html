@@ -152,5 +152,60 @@
                 .forEach(el => el.addEventListener('change', refreshPriceHistogram));
         </script>
 
+        <script>
+            function buildDiscountRatingData() {
+                const rows = Array.from(document.querySelectorAll("tbody tr"));
+                return rows
+                .map(r => {
+                    const cells = r.querySelectorAll("td");
+                    const full = parseInt(cells[1].innerText.replace(/\D/g, ""), 10);
+                    const disc = parseInt(cells[2].innerText.replace(/\D/g, ""), 10);
+                    const rating = parseFloat(r.dataset.rating) || 0;
+                    return { x: full - disc, y: rating };
+                })
+                .sort((a, b) => a.x - b.x);
+            }
+
+            const drCtx = document.getElementById("discountRatingCanvas").getContext("2d");
+            const discountRatingChart = new Chart(drCtx, {
+                type: "line",
+                data: {
+                datasets: [{
+                    label: "Скидка vs Рейтинг",
+                    data: buildDiscountRatingData(),
+                    fill: false,
+                    tension: 0.2,
+                    borderColor: "rgba(255,99,132,1)",
+                    pointBackgroundColor: "rgba(255,99,132,0.8)"
+                }]
+                },
+                options: {
+                scales: {
+                    x: {
+                    type: "linear",
+                    title: { display: true, text: "Размер скидки (₽)" }
+                    },
+                    y: {
+                    title: { display: true, text: "Рейтинг" },
+                    suggestedMin: 0,
+                    suggestedMax: 5
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+                }
+            });
+
+            function refreshDiscountChart() {
+                discountRatingChart.data.datasets[0].data = buildDiscountRatingData();
+                discountRatingChart.update();
+            }
+
+            document.querySelectorAll(
+                'input[name="min_price"], input[name="max_price"], ' +
+                'input[name="min_rating"], input[name="min_reviews"], select[name="sort_by"]'
+            ).forEach(el => el.addEventListener("change", refreshDiscountChart));
+        </script>
     </body>
 </html>
