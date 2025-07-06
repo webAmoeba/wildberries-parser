@@ -127,4 +127,9 @@ button,
 [type="reset"],
 [type="submit"] {
     appearance: none;
+    border: 0;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
 }

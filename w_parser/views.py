@@ -1,7 +1,10 @@
 import json
 
-from django.http import JsonResponse
+from django.contrib import messages
+from django.http import HttpResponseNotAllowed, JsonResponse
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
+from django.utils.html import format_html
 from django.views.decorators.csrf import csrf_exempt
 
 from w_parser.models import Product, Search, SearchProduct
@@ -129,60 +132,63 @@ def index(request):
 
 @csrf_exempt
 def save_products(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            query = data.get("query", "").strip()
-            products = data.get("products", [])
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
 
-            if not query:
+    try:
+        payload = json.loads(request.body)
+        query = payload.get("query", "").strip()
+        items = payload.get("products", [])
+
+        if not query:
+            return JsonResponse(
+                {"success": False, "error": "Не указан запрос"}, status=400
+            )
+        if not items:
+            return JsonResponse(
+                {"success": False, "error": "Нет товаров для сохранения"},
+                status=400,
+            )
+
+        search = Search.objects.create(name=query)
+
+        for item in items:
+            wb_id = item.get("wb_id")
+            if not isinstance(wb_id, int):
                 return JsonResponse(
-                    {"success": False, "error": "Query is required"}, status=400
-                )
-            if not products:
-                return JsonResponse(
-                    {"success": False, "error": "No products provided"},
+                    {
+                        "success": False,
+                        "error": f'Неверный wb_id для \
+                            "{item.get("name", "?")}"',
+                    },
                     status=400,
                 )
 
-            search = Search.objects.create(name=query)
-
-            for item in products:
-                if not item.get("wb_id") or not isinstance(
-                    item.get("wb_id"), int
-                ):
-                    return JsonResponse(
-                        {
-                            "success": False,
-                            "error": f"Invalid or missing wb_id for item \
-                                {item.get('name', 'Unknown')}",
-                        },
-                        status=400,
-                    )
-
-                product, _ = Product.objects.get_or_create(
-                    wb_id=item["wb_id"],
-                    defaults={
-                        "name": item["name"],
-                        "price": item["price"],
-                        "discount_price": item["discount_price"],
-                        "rating": item.get("rating"),
-                        "reviews": item.get("reviews", 0),
-                    },
-                )
-
-                SearchProduct.objects.get_or_create(
-                    search=search, product=product
-                )
-
-            print(
-                f"Saved search: id={search.id}, name={query}, \
-                    products={len(products)}"
+            product, _ = Product.objects.get_or_create(
+                wb_id=wb_id,
+                defaults={
+                    "name": item["name"],
+                    "price": item["price"],
+                    "discount_price": item["discount_price"],
+                    "rating": item.get("rating"),
+                    "reviews": item.get("reviews", 0),
+                },
             )
-            return JsonResponse({"success": True})
-        except Exception as e:
-            return JsonResponse({"success": False, "error": str(e)}, status=400)
-    return JsonResponse({"detail": "Method not allowed"}, status=405)
+            SearchProduct.objects.get_or_create(search=search, product=product)
+
+        messages.success(
+            request, format_html("Поиск <b>{}</b> успешно сохранён.", query)
+        )
+
+        return JsonResponse(
+            {
+                "success": True,
+                "redirect": reverse("search_products", args=[search.id]),
+            }
+        )
+
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)}, status=400)
 
 
 def saved_searchs(request):
