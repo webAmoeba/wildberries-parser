@@ -88,7 +88,67 @@
             });
         </script>
 
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+        <script>
+            const priceBins   = [0, 10000, 50000, 100000, 200000, Infinity];
+            const priceLabels = [
+                "0-10000",
+                "10000-50000",
+                "50000-100000",
+                "100000-200000",
+                "200000+"
+            ];
+
+            const rows = Array.from(document.querySelectorAll("tbody tr"));
+            const prices = rows.map(r =>
+                parseInt(r.querySelector("td:nth-child(2)").innerText.replace(/\D/g, ""), 10)
+            );
+
+            const priceCounts = priceBins.slice(0, -1).map((_, i) => {
+                const min = priceBins[i], max = priceBins[i + 1];
+                return prices.filter(p => p >= min && p < max).length;
+            });
+
+            const ctx = document.getElementById('priceHistogramCanvas').getContext('2d');
+            const priceHistogramChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                labels: priceLabels,
+                datasets: [{
+                    label: 'Количество товаров',
+                    data: priceCounts,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+                },
+                options: {
+                scales: {
+                    x: { title: { display: true, text: 'Диапазон цены (₽)' } },
+                    y: { title: { display: true, text: 'Число товаров' }, beginAtZero: true }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+                }
+            });
+
+            function refreshPriceHistogram() {
+                const newPrices = Array.from(document.querySelectorAll("tbody tr")).map(r =>
+                parseInt(r.querySelector("td:nth-child(2)").innerText.replace(/\D/g, ""), 10)
+                );
+
+                priceHistogramChart.data.datasets[0].data = priceBins.slice(0, -1).map((_, i) => {
+                const min = priceBins[i], max = priceBins[i + 1];
+                return newPrices.filter(p => p >= min && p < max).length;
+                });
+                priceHistogramChart.update();
+            }
+
+            document.querySelectorAll('input[name="min_price"], input[name="max_price"], input[name="min_rating"], input[name="min_reviews"], select[name="sort_by"]')
+                .forEach(el => el.addEventListener('change', refreshPriceHistogram));
+        </script>
 
     </body>
 </html>
