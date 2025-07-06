@@ -26,32 +26,37 @@
                       method="get"
                       action="{% if search_id %}{% url 'search_products' search_id %}{% else %}{% url 'index' %}{% endif %}">
                     <input type="hidden" name="query" value="{{ query|escape }}">
+
                     {% comment %} Фильтр по цене (диапазон) {% endcomment %}
-                    <div class="filter__type">
-                        <b>Диапазон цен:</b>
-                        <div class="filter__minmax-price">
+                    <div class="filter__type filter__prices">
+                        <div class="filter__price-inputs">
                             <label>
-                                <input type="number"
-                                       name="min_price"
-                                       placeholder="Мин. цена"
-                                       min="0"
-                                       value="{{ min_price|default_if_none:'' }}">
+                                <b>Мин. цена:</b>
+                                <input type="number" class="filter__input" value="2500">
                             </label>
+
                             <label>
-                                <input type="number"
-                                       name="max_price"
-                                       placeholder="Макс. цена"
-                                       min="0"
-                                       value="{{ max_price|default_if_none:'' }}">
+                                <b>Макс. цена:</b>
+                                <input type="number" class="filter__input" value="7500">
                             </label>
+                        </div>
+
+                        <div class="filter__range-inputs">
+                            <div class="filter__slider">
+                                <div class="filter__progress"></div>
+                            </div>
+
+                            <input type="range" min="0" max="10000" value="2500" step="100">
+                            <input type="range" min="0" max="10000" value="7500" step="100">
                         </div>
                     </div>
 
                     {% comment %} Фильтр по рейтингу {% endcomment %}
                     <div class="filter__type">
                         <label>
-                            <b>Минимальный рейтинг:</b>
-                            <input type="number"
+                            <b>Мин. рейтинг:</b>
+                            <input class="filter__input"
+                                   type="number"
                                    name="min_rating"
                                    step="0.1"
                                    min="1"
@@ -66,7 +71,8 @@
                     <div class="filter__type">
                         <label>
                             <b>Минимум отзывов:</b>
-                            <input type="number"
+                            <input class="filter__input"
+                                   type="number"
                                    name="min_reviews"
                                    min="0"
                                    placeholder="например, 100"
@@ -79,7 +85,7 @@
                     <div class="filter__type">
                         <label>
                             <b>Сортировка:</b>
-                            <select name="sort_by" onchange="this.form.submit()">
+                            <select class="filter__input" name="sort_by" onchange="this.form.submit()">
                                 <option value="" disabled {% if not sort_by %}selected{% endif %}>Сортировать по…</option>
                                 <option value="name_asc" {% if sort_by == 'name_asc' %}selected{% endif %}>Названию (А-Я)</option>
                                 <option value="name_desc" {% if sort_by == 'name_desc' %}selected{% endif %}>Названию (Я-А)</option>
