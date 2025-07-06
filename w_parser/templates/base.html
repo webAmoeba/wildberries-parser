@@ -55,7 +55,9 @@
                             name: cells[0].innerText.trim(),
                             price: parseInt(cells[1].innerText.replace(/\D/g, "")) || 0,
                             discount_price: parseInt(cells[2].innerText.replace(/\D/g, "")) || 0,
-                            rating: parseFloat(cells[3].innerText) || null,
+                            rating: row.dataset.rating 
+                                ? parseFloat(row.dataset.rating.replace(',', '.')) 
+                                : null,
                             reviews: parseInt(cells[4].innerText.replace(/\D/g, "")) || 0,
                         };
                     }).filter(product => product !== null);

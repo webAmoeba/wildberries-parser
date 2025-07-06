@@ -121,11 +121,12 @@
                         </thead>
                         <tbody>
                             {% for p in products %}
-                                <tr data-wb-id="{{ p.wb_id }}">
+                                <tr data-wb-id="{{ p.wb_id }}"
+                                    data-rating="{{ p.rating|default_if_none:'' }}">
                                     <td>{{ p.name }}</td>
                                     <td>{{ p.price }} ₽</td>
                                     <td>{{ p.discount_price }} ₽</td>
-                                    <td>{{ p.rating|default_if_none:"" }}</td>
+                                    <td>{{ p.rating|default_if_none:0|floatformat:"-1" }}</td>
                                     <td>{{ p.reviews }}</td>
                                 </tr>
                             {% endfor %}
