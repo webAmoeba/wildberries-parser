@@ -83,6 +83,8 @@ def index(request):
     max_price = request.GET.get("max_price")
     min_rating = request.GET.get("min_rating")
     min_reviews = request.GET.get("min_reviews")
+    sort_by = request.GET.get("sort_by")
+
     products = []
 
     if query:
@@ -92,6 +94,17 @@ def index(request):
         products = apply_reviews_filter(products, min_reviews)
     else:
         print("Index: No query provided, skipping fetch_wb_products")
+
+    if sort_by:
+        field, order = sort_by.split("_", 1)
+        key_map = {
+            "name": lambda p: p["name"].lower(),
+            "price": lambda p: p["price"],
+            "rating": lambda p: p.get("rating") or 0,
+            "reviews": lambda p: p.get("reviews", 0),
+        }
+        reverse = order == "desc"
+        products = sorted(products, key=key_map[field], reverse=reverse)
 
     print(
         f"Index: query={query}, min_price={min_price}, max_price={max_price}, "
@@ -109,6 +122,7 @@ def index(request):
             "max_price": max_price,
             "min_rating": min_rating,
             "min_reviews": min_reviews,
+            "sort_by": sort_by,
         },
     )
 
@@ -188,6 +202,23 @@ def search_products(request, search_id):
     products = apply_rating_filter(products, min_rating)
     products = apply_reviews_filter(products, min_reviews)
 
+    sort_by = request.GET.get("sort_by")
+
+    if sort_by:
+        orm_map = {
+            "name_asc": "name",
+            "name_desc": "-name",
+            "price_asc": "price",
+            "price_desc": "-price",
+            "rating_asc": "rating",
+            "rating_desc": "-rating",
+            "reviews_asc": "reviews",
+            "reviews_desc": "-reviews",
+        }
+        order = orm_map.get(sort_by)
+        if order:
+            products = products.order_by(order)
+
     print(
         f"Search_products: search_id={search_id}, query={search.name}, \
             min_price={min_price}, "
@@ -207,5 +238,6 @@ def search_products(request, search_id):
             "max_price": max_price,
             "min_rating": min_rating,
             "min_reviews": min_reviews,
+            "sort_by": sort_by,
         },
     )

@@ -79,16 +79,25 @@
                     <div class="filter__type">
                         <label>
                             <b>Сортировка:</b>
-                            <select name="sort_by">
-                                <option value="" disabled selected>Сортировать по…</option>
-                                <option value="name_asc">Названию (А-Я)</option>
-                                <option value="name_desc">Названию (Я-А)</option>
-                                <option value="price_asc">Цене (возр.)</option>
-                                <option value="price_desc">Цене (убыв.)</option>
-                                <option value="rating_asc">Рейтингу (возр.)</option>
-                                <option value="rating_desc">Рейтингу (убыв.)</option>
-                                <option value="reviews_asc">Колич. отзывов (возр.)</option>
-                                <option value="reviews_desc">Колич. отзывов (убыв.)</option>
+                            <select name="sort_by" onchange="this.form.submit()">
+                                <option value="" disabled {% if not sort_by %}selected{% endif %}>Сортировать по…</option>
+                                <option value="name_asc" {% if sort_by == 'name_asc' %}selected{% endif %}>Названию (А-Я)</option>
+                                <option value="name_desc" {% if sort_by == 'name_desc' %}selected{% endif %}>Названию (Я-А)</option>
+                                <option value="price_asc" {% if sort_by == 'price_asc' %}selected{% endif %}>Цене (возр.)</option>
+                                <option value="price_desc"
+                                        {% if sort_by == 'price_desc' %}selected{% endif %}>Цене (убыв.)</option>
+                                <option value="rating_asc"
+                                        {% if sort_by == 'rating_asc' %}selected{% endif %}>Рейтингу (возр.)</option>
+                                <option value="rating_desc"
+                                        {% if sort_by == 'rating_desc' %}selected{% endif %}>Рейтингу (убыв.)</option>
+                                <option value="reviews_asc"
+                                        {% if sort_by == 'reviews_asc' %}selected{% endif %}>
+                                    Кол-ву отзывов (возр.)
+                                </option>
+                                <option value="reviews_desc"
+                                        {% if sort_by == 'reviews_desc' %}selected{% endif %}>
+                                    Кол-ву отзывов (убыв.)
+                                </option>
                             </select>
                         </label>
                     </div>
