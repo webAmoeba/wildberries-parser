@@ -32,12 +32,20 @@
                         <div class="filter__price-inputs">
                             <label>
                                 <b>Мин. цена:</b>
-                                <input type="number" class="filter__input" value="2500">
+                                <input type="number"
+                                       name="min_price"
+                                       class="filter__input"
+                                       min="0"
+                                       value="{{ min_price|default_if_none:'0' }}">
                             </label>
 
                             <label>
                                 <b>Макс. цена:</b>
-                                <input type="number" class="filter__input" value="7500">
+                                <input type="number"
+                                       name="max_price"
+                                       class="filter__input"
+                                       min="0"
+                                       value="{{ max_price|default_if_none:max_price|default_if_none:10000 }}">
                             </label>
                         </div>
 
@@ -46,9 +54,20 @@
                                 <div class="filter__progress"></div>
                             </div>
 
-                            <input type="range" min="0" max="10000" value="2500" step="100">
-                            <input type="range" min="0" max="10000" value="7500" step="100">
+                            <input type="range"
+                                   min="0"
+                                   max="{{ max_price }}"
+                                   step="1"
+                                   value="{{ min_price }}"
+                                   class="filter__range-min">
+                            <input type="range"
+                                   min="0"
+                                   max="{{ max_price }}"
+                                   step="1"
+                                   value="{{ max_price }}"
+                                   class="filter__range-max">
                         </div>
+
                     </div>
 
                     {% comment %} Фильтр по рейтингу {% endcomment %}

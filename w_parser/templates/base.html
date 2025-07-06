@@ -229,5 +229,53 @@
             }
             });
         </script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const priceGap     = 1;
+                const priceInputs  = document.querySelectorAll(".filter__price-inputs .filter__input");
+                const rangeInputs  = document.querySelectorAll(".filter__range-inputs input[type='range']");
+                const progressBar  = document.querySelector(".filter__slider .filter__progress");
+                const maxRangeVal  = parseInt(rangeInputs[0].max, 10);
+
+                function syncAll(minVal, maxVal) {
+                    rangeInputs[0].value = minVal;
+                    rangeInputs[1].value = maxVal;
+                    progressBar.style.left  = (minVal / maxRangeVal) * 100 + "%";
+                    progressBar.style.right = 100 - (maxVal / maxRangeVal) * 100 + "%";
+                    priceInputs[0].value = minVal;
+                    priceInputs[1].value = maxVal;
+                }
+
+                let initMin = parseInt(priceInputs[0].value, 10) || 0;
+                let initMax = parseInt(priceInputs[1].value, 10);
+                if (isNaN(initMax)) initMax = maxRangeVal;
+                syncAll(initMin, initMax);
+
+                priceInputs.forEach((inp, idx) => {
+                    inp.addEventListener("input", () => {
+                    let minVal = parseInt(priceInputs[0].value, 10) || 0;
+                    let maxVal = parseInt(priceInputs[1].value, 10) || maxRangeVal;
+                    if (maxVal - minVal < priceGap) {
+                        if (idx === 0) minVal = maxVal - priceGap;
+                        else maxVal = minVal + priceGap;
+                    }
+                    syncAll(minVal, maxVal);
+                    });
+                });
+
+                rangeInputs.forEach((inp, idx) => {
+                    inp.addEventListener("input", () => {
+                        let minVal = parseInt(rangeInputs[0].value, 10);
+                        let maxVal = parseInt(rangeInputs[1].value, 10);
+                        if (maxVal - minVal < priceGap) {
+                            if (idx === 0) minVal = maxVal - priceGap;
+                            else maxVal = minVal + priceGap;
+                        }
+                        syncAll(minVal, maxVal);
+                    });
+                });
+            });
+        </script>
     </body>
 </html>

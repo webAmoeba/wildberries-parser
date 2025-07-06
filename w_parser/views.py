@@ -23,26 +23,26 @@ def apply_price_filters(products, min_price, max_price):
     """фильтры по цене к списку или Queryset товаров"""
     if min_price:
         try:
-            min_price = int(min_price)
+            min_val = int(min_price)
             if isinstance(products, list):
                 products = [
-                    p for p in products if p["discount_price"] >= min_price
+                    p for p in products if p["discount_price"] >= min_val
                 ]
             else:
-                products = products.filter(discount_price__gte=min_price)
+                products = products.filter(discount_price__gte=min_val)
         except (ValueError, TypeError):
-            pass  # игнор невалида
+            pass
     if max_price:
         try:
-            max_price = int(max_price)
+            max_val = int(max_price)
             if isinstance(products, list):
                 products = [
-                    p for p in products if p["discount_price"] <= max_price
+                    p for p in products if p["discount_price"] <= max_val
                 ]
             else:
-                products = products.filter(discount_price__lte=max_price)
+                products = products.filter(discount_price__lte=max_val)
         except (ValueError, TypeError):
-            pass  # игнор невалида
+            pass
     return products
 
 
@@ -50,15 +50,13 @@ def apply_reviews_filter(products, min_reviews):
     """фильтр по количеству отзывов"""
     if min_reviews:
         try:
-            min_reviews = int(min_reviews)
+            rev = int(min_reviews)
             if isinstance(products, list):
-                products = [
-                    p for p in products if p.get("reviews", 0) >= min_reviews
-                ]
+                products = [p for p in products if p.get("reviews", 0) >= rev]
             else:
-                products = products.filter(reviews__gte=min_reviews)
+                products = products.filter(reviews__gte=rev)
         except (ValueError, TypeError):
-            pass  # игнор невалида
+            pass
     return products
 
 
@@ -66,17 +64,13 @@ def apply_rating_filter(products, min_rating):
     """фильтр по рейтингу"""
     if min_rating:
         try:
-            min_rating = float(min_rating)
+            rt = float(min_rating)
             if isinstance(products, list):
-                products = [
-                    p
-                    for p in products
-                    if (p.get("rating", 0) or 0) >= min_rating
-                ]
+                products = [p for p in products if (p.get("rating") or 0) >= rt]
             else:
-                products = products.filter(rating__gte=min_rating)
+                products = products.filter(rating__gte=rt)
         except (ValueError, TypeError):
-            pass  # игнор невалида
+            pass
     return products
 
 
@@ -98,6 +92,11 @@ def index(request):
     else:
         print("Index: No query provided, skipping fetch_wb_products")
 
+    if query and not (min_price or max_price) and products:
+        vals = [p["discount_price"] for p in products]
+        min_price = str(min(vals))
+        max_price = str(max(vals))
+
     if sort_by:
         field, order = sort_by.split("_", 1)
         key_map = {
@@ -106,14 +105,8 @@ def index(request):
             "rating": lambda p: p.get("rating") or 0,
             "reviews": lambda p: p.get("reviews", 0),
         }
-        reverse = order == "desc"
-        products = sorted(products, key=key_map[field], reverse=reverse)
-
-    print(
-        f"Index: query={query}, min_price={min_price}, max_price={max_price}, "
-        f"min_rating={min_rating}, min_reviews={min_reviews}, \
-            products={len(products)}"
-    )
+        rev = order == "desc"
+        products = sorted(products, key=key_map[field], reverse=rev)
 
     return render(
         request,
@@ -136,9 +129,9 @@ def save_products(request):
         return HttpResponseNotAllowed(["POST"])
 
     try:
-        payload = json.loads(request.body)
-        query = payload.get("query", "").strip()
-        items = payload.get("products", [])
+        data = json.loads(request.body)
+        query = data.get("query", "").strip()
+        items = data.get("products", [])
 
         if not query:
             return JsonResponse(
@@ -151,20 +144,20 @@ def save_products(request):
             )
 
         search = Search.objects.create(name=query)
-
         for item in items:
             wb_id = item.get("wb_id")
             if not isinstance(wb_id, int):
                 return JsonResponse(
                     {
                         "success": False,
-                        "error": f'Неверный wb_id для \
-                            "{item.get("name", "?")}"',
+                        "error": format_html(
+                            'Неверный wb_id для "{}"', item.get("name", "?")
+                        ),
                     },
                     status=400,
                 )
 
-            product, _ = Product.objects.get_or_create(
+            prod, _ = Product.objects.get_or_create(
                 wb_id=wb_id,
                 defaults={
                     "name": item["name"],
@@ -174,12 +167,11 @@ def save_products(request):
                     "reviews": item.get("reviews", 0),
                 },
             )
-            SearchProduct.objects.get_or_create(search=search, product=product)
+            SearchProduct.objects.get_or_create(search=search, product=prod)
 
         messages.success(
             request, format_html("Поиск <b>{}</b> успешно сохранён.", query)
         )
-
         return JsonResponse(
             {
                 "success": True,
@@ -202,13 +194,12 @@ def search_products(request, search_id):
     max_price = request.GET.get("max_price")
     min_rating = request.GET.get("min_rating")
     min_reviews = request.GET.get("min_reviews")
-    products = Product.objects.filter(searches=search)
+    sort_by = request.GET.get("sort_by")
 
+    products = Product.objects.filter(searches=search)
     products = apply_price_filters(products, min_price, max_price)
     products = apply_rating_filter(products, min_rating)
     products = apply_reviews_filter(products, min_reviews)
-
-    sort_by = request.GET.get("sort_by")
 
     if sort_by:
         orm_map = {
@@ -224,14 +215,6 @@ def search_products(request, search_id):
         order = orm_map.get(sort_by)
         if order:
             products = products.order_by(order)
-
-    print(
-        f"Search_products: search_id={search_id}, query={search.name}, \
-            min_price={min_price}, "
-        f"max_price={max_price}, min_rating={min_rating}, \
-            min_reviews={min_reviews}, "
-        f"products={products.count()}"
-    )
 
     return render(
         request,
