@@ -18,187 +18,181 @@
         </div>
     </section>
 
-    <section class="section">
-        <div class="container">
-            <div class="filter">
-                <h2>Фильтры</h2>
-                <form class="filter__filters"
-                      method="get"
-                      action="{% if search_id %}{% url 'search_products' search_id %}{% else %}{% url 'index' %}{% endif %}">
-                    <input type="hidden" name="query" value="{{ query|escape }}">
-
-                    {% comment %} Фильтр по цене (диапазон) {% endcomment %}
-                    <div class="filter__type filter__prices">
-                        <div class="filter__price-inputs">
-                            <label>
-                                <b>Мин. цена:</b>
-                                <input type="number"
-                                       name="min_price"
-                                       class="filter__input"
-                                       min="0"
-                                       value="{{ min_price|default_if_none:'0' }}">
-                            </label>
-
-                            <label>
-                                <b>Макс. цена:</b>
-                                <input type="number"
-                                       name="max_price"
-                                       class="filter__input"
-                                       min="0"
-                                       value="{{ max_price|default_if_none:max_price|default_if_none:10000 }}">
-                            </label>
-                        </div>
-
-                        <div class="filter__range-inputs">
-                            <div class="filter__slider">
-                                <div class="filter__progress"></div>
+    {% if products %}
+        <div class="results hidden">
+            <section class="section">
+                <div class="container">
+                    <div class="filter">
+                        <h2>Фильтры</h2>
+                        <form class="filter__filters"
+                              method="get"
+                              action="{% if search_id %}{% url 'search_products' search_id %}{% else %}{% url 'index' %}{% endif %}">
+                            <input type="hidden" name="query" value="{{ query|escape }}">
+                            {% comment %} Фильтр по цене (диапазон) {% endcomment %}
+                            <div class="filter__type filter__prices">
+                                <div class="filter__price-inputs">
+                                    <label>
+                                        <b>Мин. цена:</b>
+                                        <input type="number"
+                                               name="min_price"
+                                               class="filter__input"
+                                               min="0"
+                                               value="{{ min_price|default_if_none:'0' }}">
+                                    </label>
+                                    <label>
+                                        <b>Макс. цена:</b>
+                                        <input type="number"
+                                               name="max_price"
+                                               class="filter__input"
+                                               min="0"
+                                               value="{{ max_price|default_if_none:max_price|default_if_none:10000 }}">
+                                    </label>
+                                </div>
+                                <div class="filter__range-inputs">
+                                    <div class="filter__slider">
+                                        <div class="filter__progress"></div>
+                                    </div>
+                                    <input type="range"
+                                           min="0"
+                                           max="{{ max_price }}"
+                                           step="1"
+                                           value="{{ min_price }}"
+                                           class="filter__range-min">
+                                    <input type="range"
+                                           min="0"
+                                           max="{{ max_price }}"
+                                           step="1"
+                                           value="{{ max_price }}"
+                                           class="filter__range-max">
+                                </div>
                             </div>
-
-                            <input type="range"
-                                   min="0"
-                                   max="{{ max_price }}"
-                                   step="1"
-                                   value="{{ min_price }}"
-                                   class="filter__range-min">
-                            <input type="range"
-                                   min="0"
-                                   max="{{ max_price }}"
-                                   step="1"
-                                   value="{{ max_price }}"
-                                   class="filter__range-max">
-                        </div>
-
+                            {% comment %} Фильтр по рейтингу {% endcomment %}
+                            <div class="filter__type">
+                                <label>
+                                    <b>Мин. рейтинг:</b>
+                                    <input class="filter__input"
+                                           type="number"
+                                           name="min_rating"
+                                           step="0.1"
+                                           min="1"
+                                           max="5"
+                                           placeholder="например, 4, 4.1"
+                                           value="{{ min_rating|default_if_none:'' }}"
+                                           oninput="const max = parseFloat(this.max); if (this.valueAsNumber > max) { this.value = max; }">
+                                </label>
+                            </div>
+                            {% comment %} Фильтр по количеству отзывов {% endcomment %}
+                            <div class="filter__type">
+                                <label>
+                                    <b>Минимум отзывов:</b>
+                                    <input class="filter__input"
+                                           type="number"
+                                           name="min_reviews"
+                                           min="0"
+                                           placeholder="например, 100"
+                                           value="{{ min_reviews|default_if_none:'' }}">
+                                </label>
+                            </div>
+                            {% comment %} Сортировка {% endcomment %}
+                            <div class="filter__type">
+                                <label>
+                                    <b>Сортировка:</b>
+                                    <select class="filter__input" name="sort_by" onchange="this.form.submit()">
+                                        <option value="" disabled {% if not sort_by %}selected{% endif %}>Сортировать по…</option>
+                                        <option value="name_asc" {% if sort_by == 'name_asc' %}selected{% endif %}>Названию (А-Я)</option>
+                                        <option value="name_desc" {% if sort_by == 'name_desc' %}selected{% endif %}>Названию (Я-А)</option>
+                                        <option value="price_asc" {% if sort_by == 'price_asc' %}selected{% endif %}>Цене (возр.)</option>
+                                        <option value="price_desc"
+                                                {% if sort_by == 'price_desc' %}selected{% endif %}>
+                                            Цене (убыв.)
+                                        </option>
+                                        <option value="rating_asc"
+                                                {% if sort_by == 'rating_asc' %}selected{% endif %}>
+                                            Рейтингу (возр.)
+                                        </option>
+                                        <option value="rating_desc"
+                                                {% if sort_by == 'rating_desc' %}selected{% endif %}>
+                                            Рейтингу (убыв.)
+                                        </option>
+                                        <option value="reviews_asc"
+                                                {% if sort_by == 'reviews_asc' %}selected{% endif %}>
+                                            Кол-ву отзывов (возр.)
+                                        </option>
+                                        <option value="reviews_desc"
+                                                {% if sort_by == 'reviews_desc' %}selected{% endif %}>
+                                            Кол-ву отзывов (убыв.)
+                                        </option>
+                                    </select>
+                                </label>
+                            </div>
+                            <div class="filter__buttons">
+                                <button class="button" type="submit">Отфильтровать</button>
+                                <a href="{% if search_id %}{% url 'search_products' search_id %}{% else %}{% url 'index' %}?query={{ query|urlencode }}{% endif %}"
+                                   class="button">Сбросить</a>
+                            </div>
+                        </form>
                     </div>
+                </div>
+            </section>
+            <section class="section output">
+                <h2 class="visually-hidden">Вывод запроса</h2>
 
-                    {% comment %} Фильтр по рейтингу {% endcomment %}
-                    <div class="filter__type">
-                        <label>
-                            <b>Мин. рейтинг:</b>
-                            <input class="filter__input"
-                                   type="number"
-                                   name="min_rating"
-                                   step="0.1"
-                                   min="1"
-                                   max="5"
-                                   placeholder="например, 4, 4.1"
-                                   value="{{ min_rating|default_if_none:'' }}"
-                                   oninput="const max = parseFloat(this.max); if (this.valueAsNumber > max) { this.value = max; }">
-                        </label>
-                    </div>
-
-                    {% comment %} Фильтр по количеству отзывов {% endcomment %}
-                    <div class="filter__type">
-                        <label>
-                            <b>Минимум отзывов:</b>
-                            <input class="filter__input"
-                                   type="number"
-                                   name="min_reviews"
-                                   min="0"
-                                   placeholder="например, 100"
-                                   value="{{ min_reviews|default_if_none:'' }}">
-
-                        </label>
-                    </div>
-
-                    {% comment %} Сортировка {% endcomment %}
-                    <div class="filter__type">
-                        <label>
-                            <b>Сортировка:</b>
-                            <select class="filter__input" name="sort_by" onchange="this.form.submit()">
-                                <option value="" disabled {% if not sort_by %}selected{% endif %}>Сортировать по…</option>
-                                <option value="name_asc" {% if sort_by == 'name_asc' %}selected{% endif %}>Названию (А-Я)</option>
-                                <option value="name_desc" {% if sort_by == 'name_desc' %}selected{% endif %}>Названию (Я-А)</option>
-                                <option value="price_asc" {% if sort_by == 'price_asc' %}selected{% endif %}>Цене (возр.)</option>
-                                <option value="price_desc"
-                                        {% if sort_by == 'price_desc' %}selected{% endif %}>Цене (убыв.)</option>
-                                <option value="rating_asc"
-                                        {% if sort_by == 'rating_asc' %}selected{% endif %}>Рейтингу (возр.)</option>
-                                <option value="rating_desc"
-                                        {% if sort_by == 'rating_desc' %}selected{% endif %}>Рейтингу (убыв.)</option>
-                                <option value="reviews_asc"
-                                        {% if sort_by == 'reviews_asc' %}selected{% endif %}>
-                                    Кол-ву отзывов (возр.)
-                                </option>
-                                <option value="reviews_desc"
-                                        {% if sort_by == 'reviews_desc' %}selected{% endif %}>
-                                    Кол-ву отзывов (убыв.)
-                                </option>
-                            </select>
-                        </label>
-                    </div>
-
-                    <div class="filter__buttons">
-                        <button class="button" type="submit">Отфильтровать</button>
-                        <a href="{% if search_id %}{% url 'search_products' search_id %}{% else %}{% url 'index' %}?query={{ query|urlencode }}{% endif %}"
-                           class="button">Сбросить</a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </section>
-
-    <section class="section output">
-        <h2 class="visually-hidden">Вывод запроса</h2>
-
-        {% if products %}
-            <div class="container">
-                <div class="output__table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Название товара</th>
-                                <th>Цена</th>
-                                <th>Цена со скидкой</th>
-                                <th>Рейтинг</th>
-                                <th>Количество отзывов</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for p in products %}
-                                <tr data-wb-id="{{ p.wb_id }}"
-                                    data-rating="{{ p.rating|default_if_none:'' }}">
-                                    <td>{{ p.name }}</td>
-                                    <td>{{ p.price }} ₽</td>
-                                    <td>{{ p.discount_price }} ₽</td>
-                                    <td>{{ p.rating|default_if_none:0|floatformat:"-1" }}</td>
-                                    <td>{{ p.reviews }}</td>
+                <div class="container">
+                    <div class="output__table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Название товара</th>
+                                    <th>Цена</th>
+                                    <th>Цена со скидкой</th>
+                                    <th>Рейтинг</th>
+                                    <th>Количество отзывов</th>
                                 </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {% for p in products %}
+                                    <tr data-wb-id="{{ p.wb_id }}"
+                                        data-rating="{{ p.rating|default_if_none:'' }}">
+                                        <td>{{ p.name }}</td>
+                                        <td>{{ p.price }} ₽</td>
+                                        <td>{{ p.discount_price }} ₽</td>
+                                        <td>{{ p.rating|default_if_none:0|floatformat:"-1" }}</td>
+                                        <td>{{ p.reviews }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <button type="button" class="button" id="save-results">Сохранить поиск</button>
                 </div>
 
-                <button type="button" class="button" id="save-results">Сохранить поиск</button>
-            </div>
+            </section>
+            <section class="section">
+                <div class="container">
+                    <h2>Гистограмма цен</h2>
+                    <div>
+                        <canvas id="priceHistogramCanvas"></canvas>
+                    </div>
+                </div>
+            </section>
+            <section class="section">
+                <div class="container">
+                    <h2>Скидка / Рейтинг</h2>
+                    <canvas id="discountRatingCanvas"></canvas>
+                </div>
+            </section>
+        </div>
 
-        {% else %}
-
-            {% if query %}
+    {% else %}
+        {% if query %}
+            <div class="section">
                 <div class="container">
                     <p>
                         По запросу <b>{{ query }}</b> ничего не найдено.
                     </p>
                 </div>
-            {% endif %}
-        {% endif %}
-    </section>
-
-    <section class="section">
-        <div class="container">
-            <h2>Гистограмма цен</h2>
-
-            <div>
-                <canvas id="priceHistogramCanvas"></canvas>
             </div>
-        </div>
-    </section>
-
-    <section class="section">
-        <div class="container">
-            <h2>Скидка / Рейтинг</h2>
-
-            <canvas id="discountRatingCanvas"></canvas>
-        </div>
-    </section>
+        {% endif %}
+    {% endif %}
 
 {% endblock %}
