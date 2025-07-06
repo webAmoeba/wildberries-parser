@@ -91,19 +91,21 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
         <script>
-            const priceBins   = [0, 10000, 50000, 100000, 200000, Infinity];
-            const priceLabels = [
-                "0-10000",
-                "10000-50000",
-                "50000-100000",
-                "100000-200000",
-                "200000+"
-            ];
-
-            const rows = Array.from(document.querySelectorAll("tbody tr"));
+            const rows   = Array.from(document.querySelectorAll("tbody tr"));
             const prices = rows.map(r =>
-                parseInt(r.querySelector("td:nth-child(2)").innerText.replace(/\D/g, ""), 10)
+              parseInt(r.querySelector("td:nth-child(3)").innerText.replace(/\D/g, ""), 10)
             );
+             const maxPrice = prices.length ? Math.max(...prices) : 0;
+             const step = Math.ceil(maxPrice / 5);
+             const priceBins = [0, step, step*2, step*3, step*4, Infinity];
+             const priceLabels = [
+               `0–${step}`,
+               `${step}–${step*2}`,
+               `${step*2}–${step*3}`,
+               `${step*3}–${step*4}`,
+               `${step*4}+`
+             ];
+
 
             const priceCounts = priceBins.slice(0, -1).map((_, i) => {
                 const min = priceBins[i], max = priceBins[i + 1];
@@ -136,7 +138,7 @@
 
             function refreshPriceHistogram() {
                 const newPrices = Array.from(document.querySelectorAll("tbody tr")).map(r =>
-                parseInt(r.querySelector("td:nth-child(2)").innerText.replace(/\D/g, ""), 10)
+                parseInt(r.querySelector("td:nth-child(3)").innerText.replace(/\D/g, ""), 10)
                 );
 
                 priceHistogramChart.data.datasets[0].data = priceBins.slice(0, -1).map((_, i) => {
