@@ -201,6 +201,11 @@ def search_products(request, search_id):
     products = apply_rating_filter(products, min_rating)
     products = apply_reviews_filter(products, min_reviews)
 
+    if not (min_price or max_price) and products.exists():
+        prices = list(products.values_list("discount_price", flat=True))
+        min_price = str(min(prices))
+        max_price = str(max(prices))
+
     if sort_by:
         orm_map = {
             "name_asc": "name",
