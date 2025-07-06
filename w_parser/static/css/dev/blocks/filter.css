@@ -54,6 +54,7 @@
 .filter__prices {
     position: relative;
     padding-bottom: 0.5rem;
+    overflow-x: hidden;
 }
 
 .filter__slider {
@@ -78,8 +79,8 @@
 
 .filter__progress {
   height: 100%;
-  left: 0;
-  right: 0;
+  left: -0.5rem;
+  right: -0.5rem;
   position: absolute;
   border-radius: 0.3125rem;
   background: var(--purple);
@@ -88,6 +89,8 @@
 .filter__range-inputs {
   position: relative;
   height: 0.3125rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
 }
 .filter__range-inputs input {
   position: absolute;
@@ -106,4 +109,10 @@ input[type="range"]::-webkit-slider-thumb {
   background: var(--purple);
   pointer-events: auto;
   appearance: none;
+}
+.filter__range-min {
+    transform: translateX(-0.5rem);
+}
+.filter__range-max {
+    transform: translateX(0.5rem);
 }

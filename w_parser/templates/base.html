@@ -241,8 +241,8 @@
                 function syncAll(minVal, maxVal) {
                     rangeInputs[0].value = minVal;
                     rangeInputs[1].value = maxVal;
-                    progressBar.style.left  = (minVal / maxRangeVal) * 100 + "%";
-                    progressBar.style.right = 100 - (maxVal / maxRangeVal) * 100 + "%";
+                    progressBar.style.left  = `calc(${(minVal / maxRangeVal) * 100}% - 0.5rem)`;
+                    progressBar.style.right = `calc(${(100 - (maxVal / maxRangeVal) * 100)}% - 0.5rem)`;
                     priceInputs[0].value = minVal;
                     priceInputs[1].value = maxVal;
                 }
