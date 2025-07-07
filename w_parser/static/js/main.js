@@ -21,14 +21,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
                 .filter(p => p !== null);
 
-            fetch("{% url 'save_products' %}", {
+            fetch(saveUrl, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-CSRFToken": "{{ csrf_token }}",
+                    "X-CSRFToken": csrfToken,
                 },
-                body: JSON.stringify({query: "{{ query|escapejs }}", products}),
+                body: JSON.stringify({query, products}),
             })
+
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
