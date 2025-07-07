@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-    404
+    <section class="section">
+        <div class="container">
+            <h1>404: Страница не найдена</h1>
+            <p style="margin-top: 1rem;">
+                Вы можете вернуться на <a class="link" href="{% url 'index' %}">главную страницу</a>.
+            </p>
+        </div>
+    </section>
 {% endblock %}
