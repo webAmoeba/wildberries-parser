@@ -52,3 +52,55 @@ def fetch_wb_products(query: str, limit: int = 10) -> list[dict]:
         )
 
     return products
+
+
+def filter_products(
+    products, min_price=None, max_price=None, min_rating=None, min_reviews=None
+):
+    """Применить последовательно все фильтры к списку dict или QuerySet."""
+    from w_parser.views import (
+        apply_price_filters,
+        apply_rating_filter,
+        apply_reviews_filter,
+    )
+
+    products = apply_price_filters(products, min_price, max_price)
+    products = apply_rating_filter(products, min_rating)
+    products = apply_reviews_filter(products, min_reviews)
+    return products
+
+
+def sort_products(products, sort_by: str):
+    """Отсортировать список dict по ключу или вернуть QuerySet с .order_by."""
+    if not sort_by or "_" not in sort_by:
+        return products
+
+    field, order = sort_by.split("_", 1)
+
+    # для QuerySet
+    from django.db.models.query import QuerySet
+
+    if isinstance(products, QuerySet):
+        orm_map = {
+            "name": "name",
+            "price": "price",
+            "rating": "rating",
+            "reviews": "reviews",
+        }
+        base = orm_map.get(field)
+        if base:
+            prefix = "-" if order == "desc" else ""
+            return products.order_by(f"{prefix}{base}")
+        return products
+
+    # для списка dict
+    key_map = {
+        "name": lambda p: p["name"].lower(),
+        "price": lambda p: p["price"],
+        "rating": lambda p: p.get("rating") or 0,
+        "reviews": lambda p: p.get("reviews", 0),
+    }
+    key = key_map.get(field)
+    if not key:
+        return products
+    return sorted(products, key=key, reverse=(order == "desc"))
