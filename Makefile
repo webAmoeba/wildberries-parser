@@ -53,3 +53,12 @@ cover-html:
 #_______________________________________________________________________________CSS
 css-build:
 	npx postcss w_parser/static/css/dev/main.css --no-map -o w_parser/static/css/main.css
+
+#_______________________________________________________________________________VPS
+vps-update:
+	git fetch origin
+	git reset --hard origin/main
+	uv sync
+	uv run python manage.py migrate
+	make collectstatic
+	sudo systemctl restart w_parser.service
