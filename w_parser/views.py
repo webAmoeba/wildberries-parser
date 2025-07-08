@@ -4,7 +4,7 @@ from django.utils.html import format_html
 from django.views.decorators.http import require_POST
 
 from w_parser.models import Product, Search, SearchProduct
-from w_parser.utils import fetch_wb_products
+from w_parser.utils import fetch_wb_products, filter_products, sort_products
 
 
 def custom_404(request, exception):
@@ -12,6 +12,52 @@ def custom_404(request, exception):
         request,
         "404.html",
         status=404,
+    )
+
+
+def saved_searchs(request):
+    searchs = Search.objects.all()
+    return render(request, "saved_searchs.html", {"searchs": searchs})
+
+
+def index(request):
+    query = request.GET.get("query", "").strip()
+    min_price = request.GET.get("min_price")
+    max_price = request.GET.get("max_price")
+    min_rating = request.GET.get("min_rating")
+    min_reviews = request.GET.get("min_reviews")
+    sort_by = request.GET.get("sort_by")
+
+    products = []
+
+    if query:
+        products = fetch_wb_products(query, limit=10)
+        products = filter_products(
+            products, min_price, max_price, min_rating, min_reviews
+        )
+    else:
+        print("Index: No query provided, skipping fetch_wb_products")
+
+    if query and not (min_price or max_price) and products:
+        vals = [p["discount_price"] for p in products]
+        min_price = str(min(vals))
+        max_price = str(max(vals))
+
+    if sort_by:
+        products = sort_products(products, sort_by)
+
+    return render(
+        request,
+        "index.html",
+        {
+            "query": query,
+            "products": products,
+            "min_price": min_price,
+            "max_price": max_price,
+            "min_rating": min_rating,
+            "min_reviews": min_reviews,
+            "sort_by": sort_by,
+        },
     )
 
 
@@ -70,55 +116,6 @@ def apply_rating_filter(products, min_rating):
     return products
 
 
-def index(request):
-    query = request.GET.get("query", "").strip()
-    min_price = request.GET.get("min_price")
-    max_price = request.GET.get("max_price")
-    min_rating = request.GET.get("min_rating")
-    min_reviews = request.GET.get("min_reviews")
-    sort_by = request.GET.get("sort_by")
-
-    products = []
-
-    if query:
-        products = fetch_wb_products(query, limit=10)
-        products = apply_price_filters(products, min_price, max_price)
-        products = apply_rating_filter(products, min_rating)
-        products = apply_reviews_filter(products, min_reviews)
-    else:
-        print("Index: No query provided, skipping fetch_wb_products")
-
-    if query and not (min_price or max_price) and products:
-        vals = [p["discount_price"] for p in products]
-        min_price = str(min(vals))
-        max_price = str(max(vals))
-
-    if sort_by:
-        field, order = sort_by.split("_", 1)
-        key_map = {
-            "name": lambda p: p["name"].lower(),
-            "price": lambda p: p["price"],
-            "rating": lambda p: p.get("rating") or 0,
-            "reviews": lambda p: p.get("reviews", 0),
-        }
-        rev = order == "desc"
-        products = sorted(products, key=key_map[field], reverse=rev)
-
-    return render(
-        request,
-        "index.html",
-        {
-            "query": query,
-            "products": products,
-            "min_price": min_price,
-            "max_price": max_price,
-            "min_rating": min_rating,
-            "min_reviews": min_reviews,
-            "sort_by": sort_by,
-        },
-    )
-
-
 @require_POST
 def save_search(request):
     query = request.POST.get("query", "").strip()
@@ -133,20 +130,10 @@ def save_search(request):
     sort_by = request.POST.get("sort_by")
 
     products = fetch_wb_products(query, limit=10)
-    products = apply_price_filters(products, min_price, max_price)
-    products = apply_rating_filter(products, min_rating)
-    products = apply_reviews_filter(products, min_reviews)
-
-    if sort_by and "_" in sort_by:
-        field, order = sort_by.split("_", 1)
-        key_map = {
-            "name": lambda p: p["name"].lower(),
-            "price": lambda p: p["price"],
-            "rating": lambda p: p.get("rating") or 0,
-            "reviews": lambda p: p.get("reviews", 0),
-        }
-        rev = order == "desc"
-        products = sorted(products, key=key_map[field], reverse=rev)
+    products = filter_products(
+        products, min_price, max_price, min_rating, min_reviews
+    )
+    products = sort_products(products, sort_by)
 
     search = Search.objects.create(name=query)
     for p in products:
@@ -168,11 +155,6 @@ def save_search(request):
     return redirect("search_products", search_id=search.id)
 
 
-def saved_searchs(request):
-    searchs = Search.objects.all()
-    return render(request, "saved_searchs.html", {"searchs": searchs})
-
-
 def search_products(request, search_id):
     search = get_object_or_404(Search, id=search_id)
     min_price = request.GET.get("min_price")
@@ -182,9 +164,9 @@ def search_products(request, search_id):
     sort_by = request.GET.get("sort_by")
 
     products = Product.objects.filter(searches=search)
-    products = apply_price_filters(products, min_price, max_price)
-    products = apply_rating_filter(products, min_rating)
-    products = apply_reviews_filter(products, min_reviews)
+    products = filter_products(
+        products, min_price, max_price, min_rating, min_reviews
+    )
 
     if not (min_price or max_price) and products.exists():
         prices = list(products.values_list("discount_price", flat=True))
@@ -192,19 +174,7 @@ def search_products(request, search_id):
         max_price = str(max(prices))
 
     if sort_by:
-        orm_map = {
-            "name_asc": "name",
-            "name_desc": "-name",
-            "price_asc": "price",
-            "price_desc": "-price",
-            "rating_asc": "rating",
-            "rating_desc": "-rating",
-            "reviews_asc": "reviews",
-            "reviews_desc": "-reviews",
-        }
-        order = orm_map.get(sort_by)
-        if order:
-            products = products.order_by(order)
+        products = sort_products(products, sort_by)
 
     return render(
         request,
