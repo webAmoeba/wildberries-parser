@@ -23,7 +23,7 @@ from w_parser import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.index, name="index"),
-    path("save-products/", views.save_products, name="save_products"),
+    path("save-search/", views.save_search, name="save_search"),
     path("saved-searchs/", views.saved_searchs, name="saved_searchs"),
     path(
         "search/<int:search_id>/", views.search_products, name="search_products"

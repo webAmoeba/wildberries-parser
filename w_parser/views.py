@@ -1,11 +1,7 @@
-import json
-
 from django.contrib import messages
-from django.http import HttpResponseNotAllowed, JsonResponse
-from django.shortcuts import get_object_or_404, render
-from django.urls import reverse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.html import format_html
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 from w_parser.models import Product, Search, SearchProduct
 from w_parser.utils import fetch_wb_products
@@ -123,64 +119,53 @@ def index(request):
     )
 
 
-@csrf_exempt
-def save_products(request):
-    if request.method != "POST":
-        return HttpResponseNotAllowed(["POST"])
+@require_POST
+def save_search(request):
+    query = request.POST.get("query", "").strip()
+    if not query:
+        messages.error(request, "Не указан запрос")
+        return redirect("index")
 
-    try:
-        data = json.loads(request.body)
-        query = data.get("query", "").strip()
-        items = data.get("products", [])
+    min_price = request.POST.get("min_price")
+    max_price = request.POST.get("max_price")
+    min_rating = request.POST.get("min_rating")
+    min_reviews = request.POST.get("min_reviews")
+    sort_by = request.POST.get("sort_by")
 
-        if not query:
-            return JsonResponse(
-                {"success": False, "error": "Не указан запрос"}, status=400
-            )
-        if not items:
-            return JsonResponse(
-                {"success": False, "error": "Нет товаров для сохранения"},
-                status=400,
-            )
+    products = fetch_wb_products(query, limit=10)
+    products = apply_price_filters(products, min_price, max_price)
+    products = apply_rating_filter(products, min_rating)
+    products = apply_reviews_filter(products, min_reviews)
 
-        search = Search.objects.create(name=query)
-        for item in items:
-            wb_id = item.get("wb_id")
-            if not isinstance(wb_id, int):
-                return JsonResponse(
-                    {
-                        "success": False,
-                        "error": format_html(
-                            'Неверный wb_id для "{}"', item.get("name", "?")
-                        ),
-                    },
-                    status=400,
-                )
+    if sort_by and "_" in sort_by:
+        field, order = sort_by.split("_", 1)
+        key_map = {
+            "name": lambda p: p["name"].lower(),
+            "price": lambda p: p["price"],
+            "rating": lambda p: p.get("rating") or 0,
+            "reviews": lambda p: p.get("reviews", 0),
+        }
+        rev = order == "desc"
+        products = sorted(products, key=key_map[field], reverse=rev)
 
-            prod, _ = Product.objects.get_or_create(
-                wb_id=wb_id,
-                defaults={
-                    "name": item["name"],
-                    "price": item["price"],
-                    "discount_price": item["discount_price"],
-                    "rating": item.get("rating"),
-                    "reviews": item.get("reviews", 0),
-                },
-            )
-            SearchProduct.objects.get_or_create(search=search, product=prod)
-
-        messages.success(
-            request, format_html("Поиск <b>{}</b> успешно сохранён.", query)
+    search = Search.objects.create(name=query)
+    for p in products:
+        prod, _ = Product.objects.get_or_create(
+            wb_id=p["wb_id"],
+            defaults={
+                "name": p["name"],
+                "price": p["price"],
+                "discount_price": p["discount_price"],
+                "rating": p.get("rating"),
+                "reviews": p.get("reviews", 0),
+            },
         )
-        return JsonResponse(
-            {
-                "success": True,
-                "redirect": reverse("search_products", args=[search.id]),
-            }
-        )
+        SearchProduct.objects.get_or_create(search=search, product=prod)
 
-    except Exception as e:
-        return JsonResponse({"success": False, "error": str(e)}, status=400)
+    messages.success(
+        request, format_html("Поиск <b>{}</b> успешно сохранён.", query)
+    )
+    return redirect("search_products", search_id=search.id)
 
 
 def saved_searchs(request):

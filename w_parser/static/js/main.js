@@ -1,49 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // сохранение
-    const btn = document.getElementById("save-results");
-    if (btn) {
-        btn.addEventListener("click", () => {
-            const products = Array.from(document.querySelectorAll("tbody tr"))
-                .map(row => {
-                    const cells = row.querySelectorAll("td");
-                    const wbId = parseInt(row.dataset.wbId, 10);
-                    if (isNaN(wbId)) return null;
-                    return {
-                        wb_id: wbId,
-                        name: cells[0].innerText.trim(),
-                        price: parseInt(cells[1].innerText.replace(/\D/g, "")) || 0,
-                        discount_price: parseInt(cells[2].innerText.replace(/\D/g, "")) || 0,
-                        rating: row.dataset.rating
-                            ? parseFloat(row.dataset.rating.replace(",", "."))
-                            : null,
-                        reviews: parseInt(cells[4].innerText.replace(/\D/g, "")) || 0,
-                    };
-                })
-                .filter(p => p !== null);
-
-            fetch(saveUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": csrfToken,
-                },
-                body: JSON.stringify({query, products}),
-            })
-
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        window.location = data.redirect;
-                    } else {
-                        alert("Ошибка: " + data.error);
-                    }
-                })
-                .catch(err => {
-                    alert("Сбой сети или сервера: " + err);
-                });
-        });
-    }
-
     // гистограмма
     const canvas = document.getElementById('priceHistogramCanvas');
     let priceHistogramChart;

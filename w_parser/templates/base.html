@@ -53,11 +53,6 @@
         </div>
 
         <script src="{% static 'js/chart.js' %}"></script>
-        <script>
-            const saveUrl = "{% url 'save_products' %}";
-            const csrfToken = "{{ csrf_token }}";
-            const query = "{{ query|escapejs }}";
-        </script>
         <script src="{% static 'js/main.js' %}"></script>
     </body>
 </html>

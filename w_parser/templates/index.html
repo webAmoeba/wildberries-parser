@@ -163,7 +163,16 @@
                             </tbody>
                         </table>
                     </div>
-                    <button type="button" class="button" id="save-results">Сохранить поиск</button>
+                    <form method="post" action="{% url 'save_search' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="query" value="{{ query }}">
+                        <input type="hidden" name="min_price" value="{{ min_price }}">
+                        <input type="hidden" name="max_price" value="{{ max_price }}">
+                        <input type="hidden" name="min_rating" value="{{ min_rating }}">
+                        <input type="hidden" name="min_reviews" value="{{ min_reviews }}">
+                        <input type="hidden" name="sort_by" value="{{ sort_by }}">
+                        <button type="submit" class="button">Сохранить поиск</button>
+                    </form>
                 </div>
 
             </section>
