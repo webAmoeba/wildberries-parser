@@ -24,7 +24,7 @@ services:
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
       - "traefik.docker.network=webamoeba-land_proxy"
     healthcheck:
-      test: ["CMD-SHELL", "curl -fs http://localhost:8000/ || exit 1"]
+      test: ["CMD-SHELL", "curl -fs -H 'Host: w-parser.webamoeba.ru' http://localhost:8000/ || exit 1"]
       interval: 60s
       timeout: 20s
       start_period: 40s
