@@ -25,10 +25,16 @@ def fetch_wb_products(query: str, limit: int = 10) -> list[dict]:
         )
     }
 
-    resp = requests.get(url, params=params, headers=headers, timeout=10)
-    resp.raise_for_status()
-
-    data = resp.json()
+    try:
+        resp = requests.get(url, params=params, headers=headers, timeout=15)
+        resp.raise_for_status()
+        data = resp.json()
+    except requests.RequestException as exc:
+        print(f"fetch_wb_products error: {exc}")
+        return []
+    except ValueError as exc:
+        print(f"fetch_wb_products json error: {exc}")
+        return []
 
     raw_products = data.get("data", {}).get("products", [])
 
