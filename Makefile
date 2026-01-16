@@ -54,6 +54,25 @@ cover-html:
 css-build:
 	npx postcss w_parser/static/css/dev/main.css --no-map -o w_parser/static/css/main.css
 
+#_______________________________________________________________________________Docker
+dc-up:
+	docker compose -f docker-compose.yml -f compose.override.yml up -d
+
+dc-down:
+	docker compose -f docker-compose.yml -f compose.override.yml down
+
+dc-logs:
+	docker compose -f docker-compose.yml -f compose.override.yml logs -f
+
+dc-ps:
+	docker compose -f docker-compose.yml -f compose.override.yml ps
+
+dc-shell:
+	docker compose -f docker-compose.yml -f compose.override.yml exec app /bin/sh
+
+dc-db:
+	docker compose -f docker-compose.yml -f compose.override.yml exec db psql -U $$POSTGRES_USER $$POSTGRES_DB
+
 #_______________________________________________________________________________VPS
 vps-update:
 	git fetch origin

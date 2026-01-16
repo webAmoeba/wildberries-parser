@@ -1,0 +1,52 @@
+services:
+  app:
+    build: .
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - proxy
+      - default
+    ports:
+      - "8003:8000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wparser.rule=Host(`w-parser.webamoeba.ru`) || Host(`www.w-parser.webamoeba.ru`)"
+      - "traefik.http.routers.wparser.entrypoints=websecure"
+      - "traefik.http.routers.wparser.tls.certresolver=le"
+      - "traefik.http.routers.wparser.service=wparser"
+      - "traefik.http.services.wparser.loadbalancer.server.port=8000"
+      - "traefik.http.routers.wparser-http.rule=Host(`w-parser.webamoeba.ru`) || Host(`www.w-parser.webamoeba.ru`)"
+      - "traefik.http.routers.wparser-http.entrypoints=web"
+      - "traefik.http.routers.wparser-http.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.docker.network=webamoeba-land_proxy"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:8000/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    env_file:
+      - .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+networks:
+  proxy:
+    external: true
+    name: webamoeba-land_proxy
+
+volumes:
+  pgdata:

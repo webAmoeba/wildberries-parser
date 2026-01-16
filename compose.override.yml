@@ -1,0 +1,7 @@
+services:
+  app:
+    env_file:
+      - .env.docker
+  db:
+    env_file:
+      - .env.docker

@@ -20,6 +20,8 @@ packaging==25.0
     # via gunicorn
 psycopg2-binary==2.9.10
     # via wildberries-parser (pyproject.toml)
+python-dotenv==1.1.1
+    # via wildberries-parser (pyproject.toml)
 requests==2.32.4
     # via wildberries-parser (pyproject.toml)
 sqlparse==0.5.3

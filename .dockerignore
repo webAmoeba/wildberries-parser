@@ -1,0 +1,16 @@
+.git
+.gitignore
+__pycache__
+*.pyc
+.venv
+.ruff_cache
+.pytest_cache
+.coverage
+htmlcov
+*.db
+*.sqlite3
+node_modules
+staticfiles
+*.log
+.env
+.env.*
